@@ -12,11 +12,16 @@ Le vocable "spectacle vivant" désigne l'ensemble des spectacles "produits ou di
 ### Listes de valeurs
 
 #### m_cul_spect_vivant_lt_dispositif
-* Soutien équipes
-* Soutien lieux de fab
-* Soutien labels
-* Soutien scènes & saisons
-* Soutien orchestres
+| Code | Libellé |
+| :--: | :--: |
+| 00 | Non renseigné |
+| D1	| Soutien équipes |
+| D2	| Soutien lieux de fab |
+| D3	| Soutien labels |
+| D4	| Soutien scènes & saisons |
+| D5	| Soutien orchestres |
+| 99 | Autre |
+
 
 #### m_cul_spect_vivant_lt_direction
 | Code | Libellé |
