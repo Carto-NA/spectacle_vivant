@@ -39,17 +39,51 @@ Le vocable "spectacle vivant" désigne l'ensemble des spectacles "produits ou di
 * Opérateurs spécifiques
 
 
-#### m_cult_spect_vivant_lt_
-*
-*
-*
-*
+#### m_cult_spect_vivant_lt_ss_categorie1
+* Scène nationale
+* Scène conventionnée
+* Scène de territoire
+* Saison sans lieu
+* Centre Chorégraphique National
+* Centre de Développement Chorégraphique national
+* Centre Dramatique National
+* Équipes artistiques Spectacle Vivant
+* Ensembles musicaux
+* Orchestres
+* Opéra
+* Centre National des Arts de la Rue
+* Pôle National des Arts du Cirque
+* Atelier de Fabrique Artistiques
+* Centre Culturel des Rencontres
+* Dirigé par un artistique
+* Dirigé par un opérateur
 
-### m_cult_spect_vivant_lt_
-*
-*
-*
-*
+
+### m_cult_spect_vivant_lt_ss_categorie2
+* Art et création
+* Art en territoire
+* Art, enfance, jeunesse
+* Langue et culture régionale
+
+
+### m_cult_spect_vivant_lt_esthetique
+* Théâtre
+* Danse
+* Musique
+* Arts de la rue
+* Arts du cirque
+* Arts pluriels
+* Autre
+
+### m_cult_spect_vivant_lt_rayonnement_aide
+| Code | Libellé |
+| :--: | :--: |
+| 0	| lieu fermé |
+| 1	| plutôt urbain |
+| 2	| plutôt « bassin de vie » |
+| 3	| plutôt local |
+| 4	| rayon d'env. 20Km |
+
 
 ### m_cult_spect_vivant_lt_
 *
