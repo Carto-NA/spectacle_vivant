@@ -19,12 +19,16 @@ Le vocable "spectacle vivant" désigne l'ensemble des spectacles "produits ou di
 * Soutien orchestres
 
 #### m_cul_spect_vivant_lt_direction
-* F
-* H
-* PARITAIRE
-* COLLECTIF HOMMES
-* COLLECTIF FEMMES
-* /
+| Code | Libellé |
+| :--: | :--: |
+| 00 | Non renseigné |
+| 01	| F |
+| 02	| H |
+| 03	| Paritaire |
+| 04	| Collectif femmes |
+| 05	| Collectif hommes |
+| 06 | / |
+| 99 | Autre |
 
 
 #### m_cult_spect_vivant_lt_categorie
@@ -78,11 +82,13 @@ Le vocable "spectacle vivant" désigne l'ensemble des spectacles "produits ou di
 ### m_cult_spect_vivant_lt_rayonnement_aide
 | Code | Libellé |
 | :--: | :--: |
+| 00 | Non renseigné |
 | 0	| lieu fermé |
 | 1	| plutôt urbain |
 | 2	| plutôt « bassin de vie » |
 | 3	| plutôt local |
 | 4	| rayon d'env. 20Km |
+| 99 | Autre |
 
 
 ### m_cult_spect_vivant_lt_
