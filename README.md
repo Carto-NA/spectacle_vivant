@@ -9,6 +9,47 @@ En cela, le spectacle vivant désigne de nombreux modes d'expression artistique 
 Le vocable "spectacle vivant" désigne l'ensemble des spectacles "produits ou diffusés par des personnes qui, en vue de la représentation en public d'une œuvre de l'esprit, s'assurent la présence physique d'au moins un artiste du spectacle". La danse, la musique, le théâtre, dans toute la diversité de leurs formes (opéra, musique de variété, chorales, fanfares, cirque, arts de la rue, conte, marionnettes...), appartiennent au spectacle vivant, par opposition au spectacle enregistré (cinéma-audiovisuel).
 
 
+### Dictionnaire de données
+
+| Table | Champ | Désignation | Type/Taille | Contrainte | Règle de calcul | Clé étrangère | Commentaire |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  | id | Identifiant | sérial | clé primaire |  |  | Identifiant non signifiant |
+|  | code | Code | varchar(15) | unique | calculé |  |  |
+|  | siret | SIRET de la structure | varchar(15) |  |  |  |  |
+|  | nom | Nom de la structure | varchar |  |  |  |  |
+|  | nom_cplt | Nom complémentaire de la structure | varchar |  |  |  |  |
+|  | numcom | Code INSEE de la commune | varchar(5) |  |  |  |  |
+|  | nomcom | Nom de la commune | varchar |  |  |  |  |
+|  | adresse |  |  |  |  |  |  |
+|  | adresse_cplt |  |  |  |  |  |  |
+|  | adresse_cedex |  |  |  |  |  |  |
+|  | code_postal |  |  |  |  |  |  |
+|  | ville_cp |  |  |  |  |  |  |
+|  | web |  |  |  |  |  |  |
+|  | annee |  |  |  |  |  |  |
+|  | direction |  |  |  |  |  |  |
+|  | budget_global |  |  |  |  |  |  |
+|  | montant_aide |  |  |  |  |  |  |
+|  | rayonnement_aide |  |  |  |  |  |  |
+|  | commentaire |  |  |  |  |  |  |
+|  | localisation_pertinence |  |  |  |  |  |  |
+|  | localisation_type |  |  |  |  |  |  |
+|  | date_creation |  |  |  |  |  |  |
+|  | date_actualisation |  |  |  |  |  |  |
+|  | geom |  |  |  |  |  |  |
+|  | dispositif |  |  |  |  |  |  |
+|  | categorie |  |  |  |  |  |  |
+|  | classification |  |  |  |  |  |  |
+|  | sous_categorie1 |  |  |  |  |  |  |
+|  | sous_categorie2 |  |  |  |  |  |  |
+|  | esthetique |  |  |  |  |  |  |
+|  |  |  |  |  |  |  |  |
+|  |  |  |  |  |  |  |  |
+|  |  |  |  |  |  |  |  |
+|  |  |  |  |  |  |  |  |
+|  |  |  |  |  |  |  |  |
+
+
 ### Listes de valeurs
 
 #### m_cul_spect_vivant_lt_dispositif
