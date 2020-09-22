@@ -1,18 +1,46 @@
 
 ---------------------------------------------------------------
 -- Drop table
+-- DROP TABLE met_cul.m_cul_spect_vivant_lt_type_localisation;
+CREATE TABLE met_cul.m_cul_spect_vivant_lt_type_localisation (
+	id serial NOT NULL,
+	code varchar(3) NOT NULL,
+	libelle varchar(150) NOT NULL,
+	CONSTRAINT lt_type_localisation_pkey PRIMARY KEY (id),
+	CONSTRAINT lt_type_localisation_uniq UNIQUE (code)
+);
+COMMENT ON TABLE met_cul.m_cul_spect_vivant_lt_type_localisation IS 'Table contenant la liste de valeurs des dispositifs';
+
+-- Permissions
+ALTER TABLE met_cul.m_cul_spect_vivant_lt_type_localisation OWNER TO "pre-sig-usr";
+GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_type_localisation TO "pre-sig-usr";
+
+
+---------------------------------------------------------------
+-- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_dispositif;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_dispositif (
 	id serial NOT NULL,
 	code varchar(3) NOT NULL,
 	libelle varchar(150) NOT NULL,
-	CONSTRAINT m_cul_spect_vivant_lt_dispositif_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_lt_dispositif_uniq UNIQUE (code)_
+	CONSTRAINT lt_dispositif_pkey PRIMARY KEY (id),
+	CONSTRAINT lt_dispositif_uniq UNIQUE (code)
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_lt_dispositif IS 'Table contenant la liste de valeurs des dispositifs';
 
 -- Permissions
 ALTER TABLE met_cul.m_cul_spect_vivant_lt_dispositif OWNER TO "pre-sig-usr";
+GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_dispositif TO "pre-sig-usr";
+
+-- Ajouter des données
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('00', 'Non renseigné');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D1', 'Soutien équipes');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D2', 'Soutien lieux de fab');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D3', 'Soutien labels');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D4', 'Soutien scènes & saisons');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D5', 'Soutien orchestres');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('99', 'Autre');
+
 
 ---------------------------------------------------------------
 -- Drop table
@@ -21,13 +49,24 @@ CREATE TABLE met_cul.m_cul_spect_vivant_lt_direction (
 	id serial NOT NULL,
 	code varchar(3) NOT NULL,
 	libelle varchar(150) NOT NULL,
-	CONSTRAINT m_cul_spect_vivant_lt_direction_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (code)
+	CONSTRAINT lt_direction_pkey PRIMARY KEY (id),
+	CONSTRAINT lt_direction_uniq UNIQUE (code)
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_lt_direction IS 'Table contenant la liste de valeurs des types de direction';
 
 -- Permissions
 ALTER TABLE met_cul.m_cul_spect_vivant_lt_direction OWNER TO "pre-sig-usr";
+GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_direction TO "pre-sig-usr";
+
+-- Ajouter des données
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('00', 'Non renseigné');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('01', 'F');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('02', 'H');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('03', 'Paritaire');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('04', 'Collectif Femmes');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('05', 'Collectif Hommes');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('06', '/');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('99', 'Autre');
 
 
 ---------------------------------------------------------------
@@ -36,7 +75,7 @@ ALTER TABLE met_cul.m_cul_spect_vivant_lt_direction OWNER TO "pre-sig-usr";
 CREATE TABLE met_cul.m_cul_spect_vivant_structure_p_geo (
 	id serial NOT NULL,
 	code varchar(3) NOT NULL,
-	libelle varchar(150) NOT NULL,
+	--libelle varchar(150) NOT NULL,
 	localisation_valide bool NOT NULL DEFAULT false,
 	localisation_pertinence varchar NULL, -- Pertinence de la localisation
 	localisation_type varchar NULL, -- Type de localisation
@@ -70,11 +109,11 @@ CREATE TABLE met_cul.m_cul_spect_vivant_structure (
 	code_postal varchar(5) NULL, -- Code postal de la commune
 	ville_cp varchar NULL,
 	web varchar NULL,
-	annee varchar(4) NOT NULL,
-	direction varchar(100) NULL,
-	budget_global numeric(12,2) NULL,
-	montant_aide numeric(9,2) NULL,
-	rayonnement_aide varchar(20) NULL,
+	--annee varchar(4) NOT NULL,
+	--direction varchar(100) NULL,
+	--budget_global numeric(12,2) NULL,
+	--montant_aide numeric(9,2) NULL,
+	--rayonnement_aide varchar(20) NULL,
 	commentaire text NULL,
 	--localisation_valide bool NOT NULL DEFAULT false,
 	donnees_valide bool NOT NULL DEFAULT false,
@@ -85,7 +124,8 @@ CREATE TABLE met_cul.m_cul_spect_vivant_structure (
 	--geom geometry(MULTIPOINT, 2154) NULL, -- Attribut contenant la géométrie
 	struct_p_geom_siret varchar(15),
 	CONSTRAINT m_cul_spect_vivant_structure_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_structure_uniq UNIQUE (siret, nom, annee),
+	--CONSTRAINT m_cul_spect_vivant_structure_uniq UNIQUE (siret, nom, annee),
+	CONSTRAINT m_cul_spect_vivant_structure_uniq UNIQUE (siret, nom),
 	CONSTRAINT positionner_structure_p_geom_fk FOREIGN KEY (struct_p_geom_siret) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(siret)
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_structure IS 'Contient les structures de Nouvelle-Aquitaine intervenant dans le spectacle vivant (Point)';
@@ -164,10 +204,11 @@ CREATE TABLE met_cul.m_cul_spect_vivant_positionner (
 	CONSTRAINT positionner_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(code),
 	CONSTRAINT positionner_structure_p_geo_fk FOREIGN KEY (direction_code) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(struct_p_geom_siret)
 );
-COMMENT ON TABLE met_cul.m_cul_spect_vivant_diriger IS 'Table d\'appartenance structure - direction';
+--
+COMMENT ON TABLE met_cul.m_cul_spect_vivant_positionner IS 'Table d\'appartenance structure - direction';
 
 -- Permissions
-ALTER TABLE met_cul.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
+ALTER TABLE met_cul.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
 
 
 ----------------------------------------------------------------------
