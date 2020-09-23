@@ -1,3 +1,21 @@
+/* SPECTACLE VIVANT V1.0 */
+/* Creation de la structure des données (schéma, tables, séquences, triggers,...) */
+/* spectacle_vivant_10_structure.sql */
+/* PostgreSQL/PostGIS */
+/* Conseil régional Nouvelle-Aquitaine - https://cartographie.nouvelle-aquitaine.fr/ */
+/* Auteur : Tony VINCENT */
+
+------------------------------------------------------------------------ 
+-- Schéma : Création du schéma
+------------------------------------------------------------------------
+
+-- Schema: met_eco
+CREATE SCHEMA IF NOT EXISTS met_cul_test;
+
+--
+COMMENT ON SCHEMA met_eco IS 'Schéma pour les données métiers sur la culture';
+
+
 
 ---------------------------------------------------------------
 -- Drop table
