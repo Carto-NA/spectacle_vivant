@@ -110,12 +110,13 @@ ALTER TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide OWNER TO "pre-sig-usr
 GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide TO "pre-sig-usr";
 
 -- Ajouter  des données
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('0', 'lieu fermé');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('1', 'plutôt urbain');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('2', 'plutôt "bassin de vie"');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('3', 'plutôt local');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('4', 'rayon d''env. 20km');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('9', 'non renseigné');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('00', 'non renseigné');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('01', 'lieu fermé');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('02', 'plutôt urbain');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('03', 'plutôt "bassin de vie"');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('04', 'plutôt local');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('05', 'rayon d''env. 20km');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('99', 'non renseigné');
 
 
 ---------------------------------------------------------------
@@ -295,7 +296,7 @@ CREATE TABLE met_cul.m_cul_spect_vivant_detail2 (
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_detail2 IS 'Table détaillant les structures du spectacle vivant';
 
--- Permissions
+-- Droits
 ALTER TABLE met_cul.m_cul_spect_vivant_detail2 OWNER TO "pre-sig-usr";
 
 
@@ -386,19 +387,32 @@ ALTER TABLE met_cul_test.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
 */
 
 ---------------------------------------------------------------
--- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_aider;
 CREATE TABLE met_cul.m_cul_spect_vivant_aider(
-   rayonnement_code VARCHAR(3),
-   structure_siret VARCHAR(50),
+   structure_siret VARCHAR(50) NOT NULL,
+   structure_nom VARCHAR NOT NULL,
+   rayonnement_code VARCHAR(3) NOT NULL DEFAULT '00',
    budget numeric(12,2),
    montant_aide numeric(12,2),
    annee VARCHAR(4) NOT NULL,
-   CONSTRAINT aider_pkey PRIMARY KEY(rayonnement_code, structure_siret, annee),
+   CONSTRAINT aider_pkey PRIMARY KEY(structure_siret, structure_nom, annee),
    CONSTRAINT aider_structure_fk FOREIGN KEY(structure_siret) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret),
-   CONSTRAINT aider_rayonnement_fk FOREIGN KEY(rayonnement_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide(code)
+   CONSTRAINT aider_rayonnement_fk FOREIGN KEY(rayonnement_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide(code),
+   CONSTRAINT aider_annee_fk FOREIGN KEY (annee) REFERENCES met_cul_test.m_cul_spect_vivant_lt_annee(annee)
 );
 
+-- Droits
+ALTER TABLE met_cul_test.m_cul_spect_vivant_aider OWNER TO "pre-sig-usr";
+
+-- Commentaires
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_aider IS 'Table d''appartenance structure - aide';
+
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_aider(structure_siret, structure_nom, rayonnement_code, budget, montant_aide, annee)
+SELECT siret, nom, '00', budget_global, montant_aide, '2019'
+FROM met_cul.m_cul_spect_vivant_struct_p
+WHERE annee='2019';
+					  
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
