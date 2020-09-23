@@ -13,12 +13,84 @@
 CREATE SCHEMA IF NOT EXISTS met_cul_test;
 
 --
-COMMENT ON SCHEMA met_eco IS 'Schéma pour les données métiers sur la culture';
+COMMENT ON SCHEMA met_cul_test IS 'Schéma pour les données métiers sur la culture';
 
 
 ------------------------------------------------------------------------ 
 -- Tables : Création des tables
 ------------------------------------------------------------------------
+
+-------------------------------------------------------
+-- Table: met_cul_test.m_cul_spect_vivant_lt_src_geom
+-- DROP TABLE met_cul_test.m_cul_spect_vivant_lt_src_geom;
+CREATE TABLE met_cul_test.m_cul_spect_vivant_lt_src_geom
+(
+  code character varying(2) NOT NULL, -- Code de la liste énumérée relative au type de référentiel géométrique
+  valeur character varying(254) NOT NULL, -- Valeur de la liste énumérée relative au type de référentiel géométrique
+  CONSTRAINT lt_src_geom_pkey PRIMARY KEY (code)
+);
+
+-- Droits
+GRANT SELECT ON TABLE met_cul_test.m_cul_spect_vivant_lt_src_geom TO "pre-sig-usr";
+
+-- Commentaires
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_lt_src_geom IS 'Code permettant de décrire le type de référentiel géométrique';
+COMMENT ON COLUMN met_cul_test.m_cul_spect_vivant_lt_src_geom.code IS 'Code de la liste énumérée relative au type de référentiel géométrique';
+COMMENT ON COLUMN met_cul_test.m_cul_spect_vivant_lt_src_geom.valeur IS 'Valeur de la liste énumérée relative au type de référentiel géométrique';
+-- 
+INSERT INTO met_cul_test.m_cul_spect_vivant_lt_src_geom(code, valeur)
+VALUES
+    ('10', 'Cadastre'),
+    ('11', 'PCI vecteur'),
+    ('12', 'BD Parcellaire'),
+    ('13', 'RPCU'),
+    ('20', 'Ortho-images'),
+    ('21', 'Orthophotoplan IGN'),
+    ('22', 'Orthophotoplan partenaire'),
+    ('23', 'Orthophotoplan local'),
+    ('30', 'Filaire voirie'),
+    ('31', 'Route BDTopo'),
+    ('32', 'Route OSM'),
+    ('40', 'Cartes'),
+    ('41', 'Scan25'),
+    ('50', 'Lever'),
+    ('51', 'Plan topographique'),
+    ('52', 'PCRS'),
+    ('53', 'Trace GPS'),
+    ('60', 'Geocodage'),
+    ('61', 'Base Adresse Locale'),
+    ('70', 'Plan masse'),
+    ('71', 'Plan masse vectoriel'),
+    ('72', 'Plan masse redessiné'),
+    ('80', 'Thématique'),
+    ('81', 'Document d''urbanisme'),
+    ('82', 'Occupation du Sol'),
+    ('83', 'Thèmes BDTopo'),
+    ('99', 'Autre'),
+    ('00', 'Non renseigné');
+  
+
+------------------------------------------------------------------------
+-- Table: met_cul_test.m_cul_spect_vivant_lt_annee
+
+-- DROP TABLE met_cul_test.m_cul_spect_vivant_lt_annee;
+ CREATE TABLE met_cul_test.m_cul_spect_vivant_lt_annee(
+   id serial NOT NULL,
+   annee VARCHAR(4),
+   CONSTRAINT lt_annee_pkey PRIMARY KEY (id),
+   CONSTRAINT lt_annee_uniq UNIQUE (annee)
+);
+
+-- Commentaires
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_lt_annee IS 'Table contenant la liste de valeurs des années de référence';
+
+-- Droits
+GRANT ALL ON TABLE met_cul_test.m_cul_spect_vivant_lt_annee TO "pre-sig-usr";
+
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_lt_annee (annee) 
+VALUES ('2019'), ('2020');
+
 
 ------------------------------------------------------------------------
 -- Table: met_cul.m_cul_spect_vivant_lt_rayonnement_aide
@@ -81,11 +153,11 @@ GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_dispositif TO "pre-sig-usr";
 
 -- Ajouter des données
 INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('00', 'Non renseigné');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D1', 'Soutien équipes');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D2', 'Soutien lieux de fab');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D3', 'Soutien labels');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D4', 'Soutien scènes & saisons');
-INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('D5', 'Soutien orchestres');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('d1', 'Soutien équipes');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('d2', 'Soutien lieux de fab');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('d3', 'Soutien labels');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('d4', 'Soutien scènes & saisons');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('d5', 'Soutien orchestres');
 INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('99', 'Autre');
 
 
@@ -123,19 +195,28 @@ CREATE TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo (
 	siret varchar(15) NOT NULL,
 	nom varchar NOT NULL,
 	localisation_valide bool NOT NULL DEFAULT false,
-	localisation_pertinence varchar NULL,
-	localisation_type varchar NULL,
 	date_creation timestamp NOT NULL DEFAULT now(),
 	date_actualisation timestamp NULL,
 	geom geometry(POINT, 2154) NULL,
-	CONSTRAINT m_cul_spect_vivant_lt_direction_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (siret, nom)
+	src_geom_code varchar(2) NOT NULL DEFAULT '00',
+	type_localisation_code varchar(3) NOT NULL DEFAULT '00',
+	CONSTRAINT structure_p_geo_pkey PRIMARY KEY (id),
+	CONSTRAINT structure_p_geo_uniq UNIQUE (siret, nom),
+	CONSTRAINT structure_p_geo_src_geom_fk FOREIGN KEY (src_geom_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_src_geom(code),
+	CONSTRAINT structure_p_geo_t_localisation_fk FOREIGN KEY (type_localisation_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_type_localisation(code)
 );
 COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo IS 'Table contenant la géometrie des structures du spectacle vivant';
 
--- Permissions
+-- Droits
 ALTER TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo OWNER TO "pre-sig-usr";
 
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_structure_p_geo(
+	siret, nom, localisation_valide, date_creation, geom, src_geom_code, type_localisation_code)
+SELECT siret, nom, false, now(), (St_Dump(geom)).geom, '60', '00'
+FROM met_cul.m_cul_spect_vivant_struct_p
+WHERE annee='2019';
+	
 
 ---------------------------------------------------------------
 -- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_structure;
@@ -176,13 +257,21 @@ COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.adresse_cedex IS 'Cedex d
 COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.code_postal IS 'Code postal de la commune';
 COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.localisation_pertinence IS 'Pertinence de la localisation';
 COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.localisation_type IS 'Type de localisation';
-COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.date_creation IS 'Correspond à la date de saisie de la donnée, , valeur non null et par défaut : now()';
+COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.date_creation IS 'Correspond à la date de saisie de la donnée, valeur non null et par défaut : now()';
 COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.date_actualisation IS 'Correspond à la date de mise à jour de la donnée, à gérer par un trigger before pour update';
 COMMENT ON COLUMN met_cul.m_cul_spect_vivant_structure.geom IS 'Attribut contenant la géométrie';
 
 -- Permissions
 ALTER TABLE met_cul.m_cul_spect_vivant_structure OWNER TO "pre-sig-usr";
 
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_structure(
+	code, siret, nom, nom_cplt, code_insee, commune, adresse, adresse_cplt, adresse_cedex, code_postal, ville_cp, web,
+	commentaire, donnees_valide, date_creation, date_actualisation)
+SELECT code, siret, nom, nom_cplt, code_insee, commune, adresse, adresse_cplt, adresse_cedex, code_postal, ville_cp, web,
+	commentaire, donnees_valide, now(), date_actualisation
+FROM met_cul.m_cul_spect_vivant_struct_p
+WHERE annee ='2019';
 
 ---------------------------------------------------------------
 -- Drop table
@@ -216,18 +305,69 @@ CREATE TABLE  met_cul_test.m_cul_spect_vivant_diriger (
 	structure_siret varchar(15) NOT NULL,
 	structure_nom varchar NOT NULL,
 	direction_code varchar(3) NOT NULL,
-	annee varchar(5) NOT NULL,
-	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret, direction_code, annee),
+	annee varchar(4) NOT NULL,
+	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret, structure_nom, annee),
 	CONSTRAINT diriger_direction_fk FOREIGN KEY (direction_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_direction(code),
-	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret, nom)
+	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret, nom),
+	CONSTRAINT diriger_annee_fk FOREIGN KEY (annee) REFERENCES met_cul_test.m_cul_spect_vivant_lt_annee(annee)
 );
 --
 COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_diriger IS 'Table d''appartenance structure - direction';
 
--- Permissions
+-- Droits
 ALTER TABLE met_cul_test.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
 
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_diriger(
+	structure_siret, structure_nom, direction_code, annee)
+SELECT siret, nom, 
+    CASE WHEN direction='F' THEN '01'
+        WHEN direction='H' THEN '02'
+        WHEN direction='Paritaire' THEN '03'
+        WHEN direction='Collectif Femmes' THEN '04'
+	WHEN direction='Collectif Hommes' THEN '05'
+	ELSE '00'
+    END, '2019'
+FROM met_cul.m_cul_spect_vivant_struct_p
+where annee ='2019';
 
+
+
+
+---------------------------------------------------------------
+-- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_appartenir;
+CREATE TABLE  met_cul_test.m_cul_spect_vivant_appartenir (
+	structure_siret varchar(15) NOT NULL,
+	structure_nom varchar NOT NULL,
+	dispositif_code varchar(3) NOT NULL,
+	annee varchar(4) NOT NULL,
+	CONSTRAINT m_cul_spect_vivant_appartenir_pkey PRIMARY KEY (structure_siret, structure_nom, dispositif_code, annee),
+	CONSTRAINT appartenir_dispositif_fk FOREIGN KEY (dispositif_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_dispositif(code),
+	CONSTRAINT appartenir_structure_fk FOREIGN KEY (structure_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret, nom),
+	CONSTRAINT appartenir_annee_fk FOREIGN KEY (annee) REFERENCES met_cul_test.m_cul_spect_vivant_lt_annee(annee)
+);
+--
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_appartenir IS 'Table d''appartenance structure - dispositif';
+
+-- Droits
+ALTER TABLE met_cul_test.m_cul_spect_vivant_appartenir OWNER TO "pre-sig-usr";
+
+-- Ajouter des données
+INSERT INTO met_cul_test.m_cul_spect_vivant_appartenir(structure_siret, structure_nom, annee, dispositif_code)
+VALUES('42507515700031', 'Association Zo Prod', '2019', 'd1');
+
+INSERT INTO met_cul_test.m_cul_spect_vivant_appartenir(structure_siret, structure_nom, annee, dispositif_code)
+VALUES('53509159900014', 'La Maison des Arts', '2019', 'd1');
+	
+INSERT INTO met_cul_test.m_cul_spect_vivant_appartenir(structure_siret, structure_nom, annee, dispositif_code)
+VALUES('53441577300025', 'Sur le Pont CNAREP en Nouvelle Aquitaine', '2019', 'd1');
+	
+INSERT INTO met_cul_test.m_cul_spect_vivant_appartenir(structure_siret, structure_nom, annee, dispositif_code)
+VALUES('53441577300025', 'Sur le Pont CNAREP en Nouvelle Aquitaine', '2019', 'd2');
+
+					  
+					  
+/*
 ---------------------------------------------------------------
 -- DROP TABLE IF EXISTS met_cul.m_cul_spect_vivant_positionner;
 CREATE TABLE met_cul_test.m_cul_spect_vivant_positionner (
@@ -243,9 +383,7 @@ COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_positionner IS 'Table d''appart
 
 -- Permissions
 ALTER TABLE met_cul_test.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
-
-
-
+*/
 
 ---------------------------------------------------------------
 -- Drop table
