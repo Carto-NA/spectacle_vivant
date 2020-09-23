@@ -16,9 +16,13 @@ CREATE SCHEMA IF NOT EXISTS met_cul_test;
 COMMENT ON SCHEMA met_eco IS 'Schéma pour les données métiers sur la culture';
 
 
+------------------------------------------------------------------------ 
+-- Tables : Création des tables
+------------------------------------------------------------------------
 
----------------------------------------------------------------
--- Drop table
+------------------------------------------------------------------------
+-- Table: met_cul.m_cul_spect_vivant_lt_rayonnement_aide
+
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide (
 	id serial NOT NULL,
@@ -116,7 +120,7 @@ INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('99',
 -- DROP TABLE met_cul.m_cul_spect_vivant_structure_p_geo;
 CREATE TABLE met_cul.m_cul_spect_vivant_structure_p_geo (
 	id serial NOT NULL,
-	code varchar(3) NOT NULL,
+	siret varchar(15) NOT NULL,
 	--libelle varchar(150) NOT NULL,
 	localisation_valide bool NOT NULL DEFAULT false,
 	localisation_pertinence varchar NULL, -- Pertinence de la localisation
@@ -125,7 +129,7 @@ CREATE TABLE met_cul.m_cul_spect_vivant_structure_p_geo (
 	date_actualisation timestamp NULL, -- Correspond à la date de mise à jour de la donnée, à gérer par un trigger before pour update
 	geom geometry(POINT, 2154) NULL, -- Attribut contenant la géométrie
 	CONSTRAINT m_cul_spect_vivant_lt_direction_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (code)
+	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (siret)
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_structure_p_geo IS 'Table contenant la géometrie des structures du spectacle vivant';
 
@@ -226,10 +230,10 @@ CREATE TABLE met_cul.m_cul_spect_vivant_diriger (
 	annee varchar(5) NOT NULL,
 	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret,direction_code, annee),
 	--CONSTRAINT m_cul_spect_vivant_diriger_uniq UNIQUE (code)
-	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(code),
+	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(siret),
 	CONSTRAINT diriger_direction_fk FOREIGN KEY (direction_code) REFERENCES met_cul.m_cul_spect_vivant_lt_direction(code)
 );
-COMMENT ON TABLE met_cul.m_cul_spect_vivant_diriger IS 'Table d\'appartenance structure - direction';
+COMMENT ON TABLE met_cul.m_cul_spect_vivant_diriger IS 'Table d''appartenance structure - direction';
 
 -- Permissions
 ALTER TABLE met_cul.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
@@ -241,16 +245,16 @@ ALTER TABLE met_cul.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
 CREATE TABLE met_cul.m_cul_spect_vivant_positionner (
 	structure_siret varchar(15) NOT NULL,
 	struct_p_geo_siret varchar(3) NOT NULL,
-	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret,direction_code, annee),
+	CONSTRAINT positionner_structure_diriger_pkey PRIMARY KEY (structure_siret,struct_p_geo_siret),
 	--CONSTRAINT m_cul_spect_vivant_diriger_uniq UNIQUE (code)
-	CONSTRAINT positionner_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(code),
-	CONSTRAINT positionner_structure_p_geo_fk FOREIGN KEY (direction_code) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(struct_p_geom_siret)
+	CONSTRAINT positionner_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(siret),
+	CONSTRAINT positionner_structure_p_geo_fk FOREIGN KEY (struct_p_geo_siret) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(siret)
 );
 --
-COMMENT ON TABLE met_cul.m_cul_spect_vivant_positionner IS 'Table d\'appartenance structure - direction';
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_positionner IS 'Table d''appartenance structure - positionner';
 
 -- Permissions
-ALTER TABLE met_cul.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
+ALTER TABLE met_cul_test.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
 
 
 ----------------------------------------------------------------------
