@@ -43,6 +43,7 @@ INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUE
 INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('2', 'plutôt "bassin de vie"');
 INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('3', 'plutôt local');
 INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('4', 'rayon d''env. 20km');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('9', 'non renseigné');
 
 
 ---------------------------------------------------------------
@@ -116,63 +117,51 @@ INSERT INTO met_cul.m_cul_spect_vivant_lt_direction (code, libelle) VALUES('99',
 
 
 ---------------------------------------------------------------
--- Drop table
--- DROP TABLE met_cul.m_cul_spect_vivant_structure_p_geo;
-CREATE TABLE met_cul.m_cul_spect_vivant_structure_p_geo (
+-- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_structure_p_geo;
+CREATE TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo (
 	id serial NOT NULL,
 	siret varchar(15) NOT NULL,
-	--libelle varchar(150) NOT NULL,
+	nom varchar NOT NULL,
 	localisation_valide bool NOT NULL DEFAULT false,
-	localisation_pertinence varchar NULL, -- Pertinence de la localisation
-	localisation_type varchar NULL, -- Type de localisation
-	date_creation timestamp NOT NULL DEFAULT now(), -- Correspond à la date de saisie de la donnée, , valeur non null et par défaut : now()
-	date_actualisation timestamp NULL, -- Correspond à la date de mise à jour de la donnée, à gérer par un trigger before pour update
-	geom geometry(POINT, 2154) NULL, -- Attribut contenant la géométrie
+	localisation_pertinence varchar NULL,
+	localisation_type varchar NULL,
+	date_creation timestamp NOT NULL DEFAULT now(),
+	date_actualisation timestamp NULL,
+	geom geometry(POINT, 2154) NULL,
 	CONSTRAINT m_cul_spect_vivant_lt_direction_pkey PRIMARY KEY (id),
-	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (siret)
+	CONSTRAINT m_cul_spect_vivant_lt_direction_uniq UNIQUE (siret, nom)
 );
-COMMENT ON TABLE met_cul.m_cul_spect_vivant_structure_p_geo IS 'Table contenant la géometrie des structures du spectacle vivant';
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo IS 'Table contenant la géometrie des structures du spectacle vivant';
 
 -- Permissions
-ALTER TABLE met_cul.m_cul_spect_vivant_structure_p_geo OWNER TO "pre-sig-usr";
-
+ALTER TABLE met_cul_test.m_cul_spect_vivant_structure_p_geo OWNER TO "pre-sig-usr";
 
 
 ---------------------------------------------------------------
--- Drop table
--- DROP TABLE met_cul.m_cul_spect_vivant_structure;
-CREATE TABLE met_cul.m_cul_spect_vivant_structure (
+-- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_structure;
+CREATE TABLE met_cul_test.m_cul_spect_vivant_structure (
 	id serial NOT NULL,
-	code varchar(15) NULL, -- Code de la structure
-	siret varchar(15) NOT NULL, -- SIRET de la structure
-	nom varchar NULL,
+	code varchar(15) NULL,
+	siret varchar(15) NOT NULL,
+	nom varchar NOT NULL,
 	nom_cplt varchar NULL,
-	code_insee varchar(5) NULL, -- Code insee de la commune
-	commune varchar(150) NULL, -- Libellé de la commune
-	adresse varchar NULL, -- Adresse de la structure
-	adresse_cplt varchar NULL, -- Adresse complémentaire de la structure
-	adresse_cedex varchar NULL, -- Cedex de l'adresse
-	code_postal varchar(5) NULL, -- Code postal de la commune
+	code_insee varchar(5) NULL,
+	commune varchar(150) NULL,
+	adresse varchar NULL,
+	adresse_cplt varchar NULL,
+	adresse_cedex varchar NULL,
+	code_postal varchar(5) NULL,
 	ville_cp varchar NULL,
 	web varchar NULL,
-	--annee varchar(4) NOT NULL,
-	--direction varchar(100) NULL,
-	--budget_global numeric(12,2) NULL,
-	--montant_aide numeric(9,2) NULL,
-	--rayonnement_aide varchar(20) NULL,
 	commentaire text NULL,
-	--localisation_valide bool NOT NULL DEFAULT false,
 	donnees_valide bool NOT NULL DEFAULT false,
-	--localisation_pertinence varchar NULL, -- Pertinence de la localisation
-	--localisation_type varchar NULL, -- Type de localisation
-	date_creation timestamp NOT NULL DEFAULT now(), -- Correspond à la date de saisie de la donnée, , valeur non null et par défaut : now()
-	date_actualisation timestamp NULL, -- Correspond à la date de mise à jour de la donnée, à gérer par un trigger before pour update
-	--geom geometry(MULTIPOINT, 2154) NULL, -- Attribut contenant la géométrie
-	struct_p_geom_siret varchar(15),
+	date_creation timestamp NOT NULL DEFAULT now(),
+	date_actualisation timestamp NULL,
+	struct_p_geom_siret varchar(15) NULL,
+	struct_p_geom_nom varchar NULL,
 	CONSTRAINT m_cul_spect_vivant_structure_pkey PRIMARY KEY (id),
-	--CONSTRAINT m_cul_spect_vivant_structure_uniq UNIQUE (siret, nom, annee),
 	CONSTRAINT m_cul_spect_vivant_structure_uniq UNIQUE (siret, nom),
-	CONSTRAINT positionner_structure_p_geom_fk FOREIGN KEY (struct_p_geom_siret) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(siret)
+	CONSTRAINT positionner_structure_p_geom_fk FOREIGN KEY (struct_p_geom_siret, struct_p_geom_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure_p_geo(siret, nom)
 );
 COMMENT ON TABLE met_cul.m_cul_spect_vivant_structure IS 'Contient les structures de Nouvelle-Aquitaine intervenant dans le spectacle vivant (Point)';
 
@@ -222,39 +211,55 @@ ALTER TABLE met_cul.m_cul_spect_vivant_detail2 OWNER TO "pre-sig-usr";
 
 
 ---------------------------------------------------------------
--- Drop table
--- DROP TABLE met_cul.m_cul_spect_vivant_diriger;
-CREATE TABLE met_cul.m_cul_spect_vivant_diriger (
+-- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_diriger;
+CREATE TABLE  met_cul_test.m_cul_spect_vivant_diriger (
 	structure_siret varchar(15) NOT NULL,
+	structure_nom varchar NOT NULL,
 	direction_code varchar(3) NOT NULL,
 	annee varchar(5) NOT NULL,
-	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret,direction_code, annee),
-	--CONSTRAINT m_cul_spect_vivant_diriger_uniq UNIQUE (code)
-	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(siret),
-	CONSTRAINT diriger_direction_fk FOREIGN KEY (direction_code) REFERENCES met_cul.m_cul_spect_vivant_lt_direction(code)
+	CONSTRAINT m_cul_spect_vivant_diriger_pkey PRIMARY KEY (structure_siret, direction_code, annee),
+	CONSTRAINT diriger_direction_fk FOREIGN KEY (direction_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_direction(code),
+	CONSTRAINT diriger_structure_fk FOREIGN KEY (structure_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret, nom)
 );
-COMMENT ON TABLE met_cul.m_cul_spect_vivant_diriger IS 'Table d''appartenance structure - direction';
+--
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_diriger IS 'Table d''appartenance structure - direction';
 
 -- Permissions
-ALTER TABLE met_cul.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
+ALTER TABLE met_cul_test.m_cul_spect_vivant_diriger OWNER TO "pre-sig-usr";
+
+
+---------------------------------------------------------------
+-- DROP TABLE IF EXISTS met_cul.m_cul_spect_vivant_positionner;
+CREATE TABLE met_cul_test.m_cul_spect_vivant_positionner (
+	structure_siret varchar(15) NOT NULL,
+	structure_nom varchar NOT NULL,
+	struct_p_geo_siret varchar(3) NOT NULL,
+	CONSTRAINT positionner_structure_diriger_pkey PRIMARY KEY (structure_siret, struct_p_geo_siret),
+	CONSTRAINT positionner_structure_fk FOREIGN KEY (structure_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret, nom),
+	CONSTRAINT positionner_structure_p_geo_fk FOREIGN KEY (struct_p_geo_siret, structure_nom) REFERENCES met_cul_test.m_cul_spect_vivant_structure_p_geo(siret, nom)
+);
+--
+COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_positionner IS 'Table d''appartenance structure - direction';
+
+-- Permissions
+ALTER TABLE met_cul_test.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
+
+
 
 
 ---------------------------------------------------------------
 -- Drop table
--- DROP TABLE met_cul.m_cul_spect_vivant_positionner;
-CREATE TABLE met_cul.m_cul_spect_vivant_positionner (
-	structure_siret varchar(15) NOT NULL,
-	struct_p_geo_siret varchar(3) NOT NULL,
-	CONSTRAINT positionner_structure_diriger_pkey PRIMARY KEY (structure_siret,struct_p_geo_siret),
-	--CONSTRAINT m_cul_spect_vivant_diriger_uniq UNIQUE (code)
-	CONSTRAINT positionner_structure_fk FOREIGN KEY (structure_siret) REFERENCES met_cul.m_cul_spect_vivant_structure(siret),
-	CONSTRAINT positionner_structure_p_geo_fk FOREIGN KEY (struct_p_geo_siret) REFERENCES met_cul.m_cul_spect_vivant_structure_p_geo(siret)
+-- DROP TABLE met_cul.m_cul_spect_vivant_aider;
+CREATE TABLE met_cul.m_cul_spect_vivant_aider(
+   rayonnement_code VARCHAR(3),
+   structure_siret VARCHAR(50),
+   budget numeric(12,2),
+   montant_aide numeric(12,2),
+   annee VARCHAR(4) NOT NULL,
+   CONSTRAINT aider_pkey PRIMARY KEY(rayonnement_code, structure_siret, annee),
+   CONSTRAINT aider_structure_fk FOREIGN KEY(structure_siret) REFERENCES met_cul_test.m_cul_spect_vivant_structure(siret),
+   CONSTRAINT aider_rayonnement_fk FOREIGN KEY(rayonnement_code) REFERENCES met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide(code)
 );
---
-COMMENT ON TABLE met_cul_test.m_cul_spect_vivant_positionner IS 'Table d''appartenance structure - positionner';
-
--- Permissions
-ALTER TABLE met_cul_test.m_cul_spect_vivant_positionner OWNER TO "pre-sig-usr";
 
 
 ----------------------------------------------------------------------
