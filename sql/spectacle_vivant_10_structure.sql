@@ -120,7 +120,6 @@ INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUE
 
 
 ---------------------------------------------------------------
--- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_type_localisation;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_type_localisation (
 	id serial NOT NULL,
@@ -137,7 +136,6 @@ GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_type_localisation TO "pre-sig-u
 
 
 ---------------------------------------------------------------
--- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_dispositif;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_dispositif (
 	id serial NOT NULL,
@@ -163,7 +161,6 @@ INSERT INTO met_cul.m_cul_spect_vivant_lt_dispositif (code, libelle) VALUES('99'
 
 
 ---------------------------------------------------------------
--- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_direction;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_direction (
 	id serial NOT NULL,
@@ -293,7 +290,6 @@ FROM met_cul.m_cul_spect_vivant_struct_p
 WHERE annee ='2019';
 
 ---------------------------------------------------------------
--- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_detail2;
 CREATE TABLE met_cul.m_cul_spect_vivant_detail2 (
 	id serial NOT NULL,
@@ -350,6 +346,18 @@ SELECT siret, nom,
 FROM met_cul.m_cul_spect_vivant_struct_p
 where annee ='2019';
 
+INSERT INTO met_cul_test.m_cul_spect_vivant_diriger(
+	structure_siret, structure_nom, direction_code, annee)
+SELECT siret, nom, 
+    CASE WHEN direction='F' THEN '01'
+        WHEN direction='H' THEN '02'
+        WHEN direction='Paritaire' THEN '03'
+        WHEN direction='Collectif Femmes' THEN '04'
+	WHEN direction='Collectif Hommes' THEN '05'
+	ELSE '00'
+    END, '2020'
+FROM met_cul.m_cul_spect_vivant_struct_p
+where annee ='2019' limit 5;
 
 ---------------------------------------------------------------
 -- DROP TABLE IF EXISTS met_cul_test.m_cul_spect_vivant_appartenir;
@@ -411,23 +419,44 @@ INSERT INTO met_cul_test.m_cul_spect_vivant_aider(structure_siret, structure_nom
 SELECT siret, nom, '00', budget_global, montant_aide, '2019'
 FROM met_cul.m_cul_spect_vivant_struct_p
 WHERE annee='2019';
+
+INSERT INTO met_cul_test.m_cul_spect_vivant_aider(structure_siret, structure_nom, rayonnement_code, budget, montant_aide, annee)
+SELECT siret, nom, '00', budget_global, montant_aide, '2020'
+FROM met_cul.m_cul_spect_vivant_struct_p
+WHERE annee='2019' LIMIT 5;
 					  
 
 ---------------------------------------------------------------
 -- DROP VIEW met_cul_test.m_cul_spect_vivant_view;
 CREATE VIEW met_cul_test.m_cul_spect_vivant_view AS
-    SELECT t1.*, t2.src_geom_code as geom_src_code, t4.valeur as geom_src_source, t2.type_localisation_code, t3.libelle, t2.date_creation as geom_date_creation, 
-	t2.date_actualisation as geom_date_actualisation, t2.localisation_valide as geom_localisation_valide
+    SELECT t1.*, t2.src_geom_code, t4.valeur as geom_src_source, t2.type_localisation_code, t3.libelle, t2.date_creation as geom_date_creation, 
+	t2.date_actualisation as geom_date_actualisation, t2.localisation_valide as geom_localisation_valide,
+	t5.direction_code, t6.libelle as direction_libelle
     FROM met_cul_test.m_cul_spect_vivant_structure t1
     INNER JOIN met_cul_test.m_cul_spect_vivant_structure_p_geo t2
     ON t1.siret = t2.siret AND t1.nom = t2.nom
     INNER JOIN met_cul_test.m_cul_spect_vivant_lt_type_localisation t3
     ON t2.type_localisation_code = t3.code
     INNER JOIN met_cul_test.m_cul_spect_vivant_lt_src_geom t4
-    ON t2.src_geom_code = t4.code    ;
+    ON t2.src_geom_code = t4.code    
+    INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t5
+    ON t2.siret = t5.structure_siret and  t2.nom = t5.structure_nom
+    INNER JOIN met_cul_test.m_cul_spect_vivant_lt_direction t6
+    ON t5.direction_code = t6.code    
 
 -- Droits
 ALTER TABLE met_cul_test.m_cul_spect_vivant_view OWNER TO "pre-sig-usr";					  
+
+ 
+					  
+SELECT t0.structure_siret, t0.structure_nom, rayonnement_code, budget, montant_aide, t0.annee,
+	t1.nom_cplt, t1.adresse, t1.commune, t2.direction_code
+FROM met_cul_test.m_cul_spect_vivant_aider t0
+INNER JOIN met_cul_test.m_cul_spect_vivant_structure t1
+ON t0.structure_siret=t1.siret AND t0.structure_nom=t1.nom
+INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t2
+ON t0.structure_siret=t2.structure_siret AND t0.structure_nom=t2.structure_nom AND t0.annee=t2.annee;					  
+					  
 					  
 /*
 ---------------------------------------------------------------
