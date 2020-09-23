@@ -1,6 +1,30 @@
 
 ---------------------------------------------------------------
 -- Drop table
+-- DROP TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide;
+CREATE TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide (
+	id serial NOT NULL,
+	code varchar(3) NOT NULL,
+	libelle varchar(150) NOT NULL,
+	CONSTRAINT lt_type_localisation_pkey PRIMARY KEY (id),
+	CONSTRAINT lt_type_localisation_uniq UNIQUE (code)
+);
+COMMENT ON TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide IS 'Table contenant la liste de valeurs du rayonnement de l''aide';
+
+-- Permissions
+ALTER TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide OWNER TO "pre-sig-usr";
+GRANT ALL ON TABLE met_cul.m_cul_spect_vivant_lt_rayonnement_aide TO "pre-sig-usr";
+
+-- Ajouter  des données
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('0', 'lieu fermé');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('1', 'plutôt urbain');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('2', 'plutôt "bassin de vie"');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('3', 'plutôt local');
+INSERT INTO met_cul.m_cul_spect_vivant_lt_rayonnement_aide (code, libelle) VALUES('4', 'rayon d''env. 20km');
+
+
+---------------------------------------------------------------
+-- Drop table
 -- DROP TABLE met_cul.m_cul_spect_vivant_lt_type_localisation;
 CREATE TABLE met_cul.m_cul_spect_vivant_lt_type_localisation (
 	id serial NOT NULL,
