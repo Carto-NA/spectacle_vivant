@@ -427,35 +427,139 @@ WHERE annee='2019' LIMIT 5;
 					  
 
 ---------------------------------------------------------------
--- DROP VIEW met_cul_test.m_cul_spect_vivant_view;
-CREATE VIEW met_cul_test.m_cul_spect_vivant_view AS
-    SELECT t1.*, t2.src_geom_code, t4.valeur as geom_src_source, t2.type_localisation_code, t3.libelle, t2.date_creation as geom_date_creation, 
-	t2.date_actualisation as geom_date_actualisation, t2.localisation_valide as geom_localisation_valide,
-	t5.direction_code, t6.libelle as direction_libelle
-    FROM met_cul_test.m_cul_spect_vivant_structure t1
-    INNER JOIN met_cul_test.m_cul_spect_vivant_structure_p_geo t2
-    ON t1.siret = t2.siret AND t1.nom = t2.nom
-    INNER JOIN met_cul_test.m_cul_spect_vivant_lt_type_localisation t3
-    ON t2.type_localisation_code = t3.code
-    INNER JOIN met_cul_test.m_cul_spect_vivant_lt_src_geom t4
-    ON t2.src_geom_code = t4.code    
-    INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t5
-    ON t2.siret = t5.structure_siret and  t2.nom = t5.structure_nom
-    INNER JOIN met_cul_test.m_cul_spect_vivant_lt_direction t6
-    ON t5.direction_code = t6.code    
+--DROP VIEW met_cul_test.m_cul_spect_vivant_view;
+-- CREATE OR REPLACE VIEW met_cul_test.m_cul_spect_vivant_view
+AS SELECT r1.structure_siret AS siret, r1.structure_nom AS nom, r1.nom_cplt, r1.code_insee, r1.code_postal, r1.commune, r1.adresse,
+    r1.adresse_cplt, r1.adresse_cedex, r1.web,
+    r1.budget, r1.montant_aide, r1.commentaire, r1.annee AS annee_reference, r1.rayonnement_code, r1.rayonnement_libelle,
+    r1.direction_code, t5.libelle AS direction_libelle, r1.geom, r1.src_geom_code AS geom_src_code,
+    t6.valeur AS geom_src_libelle, r1.type_localisation_code, t7.libelle AS type_localisation_libelle, r1.localisation_valide
+   FROM ( SELECT t0.structure_siret,
+            t0.structure_nom, t1.nom_cplt, t1.code_insee, t1.commune, t1.adresse, t1.adresse_cplt, t1.adresse_cedex, t1.code_postal, t1.web,
+            t0.budget, t0.montant_aide, t1.commentaire, t0.rayonnement_code, t3.libelle AS rayonnement_libelle,
+            t0.annee, t2.direction_code, t4.geom, t4.src_geom_code, t4.type_localisation_code, t4.localisation_valide
+           FROM met_cul_test.m_cul_spect_vivant_aider t0
+             JOIN met_cul_test.m_cul_spect_vivant_structure t1 ON t0.structure_siret::text = t1.siret::text AND t0.structure_nom::text = t1.nom::text
+             JOIN met_cul_test.m_cul_spect_vivant_diriger t2 ON t0.structure_siret::text = t2.structure_siret::text AND t0.structure_nom::text = t2.structure_nom::text AND t0.annee::text = t2.annee::text
+             JOIN met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide t3 ON t0.rayonnement_code::text = t3.code::text
+             JOIN met_cul_test.m_cul_spect_vivant_structure_p_geo t4 ON t0.structure_siret::text = t4.siret::text AND t0.structure_nom::text = t4.nom::text) r1
+     JOIN met_cul_test.m_cul_spect_vivant_lt_direction t5 ON r1.direction_code::text = t5.code::text
+     JOIN met_cul_test.m_cul_spect_vivant_lt_src_geom t6 ON r1.src_geom_code::text = t6.code::text
+     JOIN met_cul_test.m_cul_spect_vivant_lt_type_localisation t7 ON r1.type_localisation_code::text = t7.code::text;
 
--- Droits
-ALTER TABLE met_cul_test.m_cul_spect_vivant_view OWNER TO "pre-sig-usr";					  
+-- Permissions
+ALTER TABLE met_cul_test.m_cul_spect_vivant_view OWNER TO "pre-sig-usr";
+GRANT ALL ON TABLE met_cul_test.m_cul_spect_vivant_view TO "pre-sig-usr";					  
 
- 
+---------------------------------------------------------------
+--DROP VIEW met_cul_test.m_cul_spect_vivant_dispositif_view;
+CREATE VIEW met_cul_test.m_cul_spect_vivant_dispositif_view AS
+SELECT 
+	t0.structure_siret, t0.structure_nom, t0.annee, t0.dispositif_code, t1.libelle as dispositif_libelle
+FROM met_cul_test.m_cul_spect_vivant_appartenir t0
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_dispositif t1
+	ON t0.dispositif_code=t1.code;
 					  
-SELECT t0.structure_siret, t0.structure_nom, rayonnement_code, budget, montant_aide, t0.annee,
-	t1.nom_cplt, t1.adresse, t1.commune, t2.direction_code
-FROM met_cul_test.m_cul_spect_vivant_aider t0
-INNER JOIN met_cul_test.m_cul_spect_vivant_structure t1
-ON t0.structure_siret=t1.siret AND t0.structure_nom=t1.nom
-INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t2
-ON t0.structure_siret=t2.structure_siret AND t0.structure_nom=t2.structure_nom AND t0.annee=t2.annee;					  
+
+---------------------------------------------------------------
+--DROP VIEW met_cul_test.m_cul_spect_vivant_view;
+--CREATE VIEW met_cul_test.m_cul_spect_vivant_view AS
+select r2.*, r3.annee, r3.dispositif_code, r3.dispositif_libelle
+FROM
+(
+SELECT r1.structure_siret as siret, r1.structure_nom as nom, r1.nom_cplt, 
+	r1.code_insee, r1.code_postal, r1.commune, r1.adresse, r1.adresse_cplt, r1.adresse_cedex,  
+	r1.web, r1.budget, r1.montant_aide, r1.commentaire, r1.annee as annee_reference,
+	r1.rayonnement_code, r1.rayonnement_libelle,
+	r1.direction_code, t5.libelle as direction_libelle,
+	r1.geom, r1.src_geom_code as geom_src_code, t6.valeur as geom_src_libelle, 
+	r1.type_localisation_code, t7.libelle as type_localisation_libelle, r1.localisation_valide
+	--,
+	--t8.dispositif_code
+FROM (
+	SELECT t0.structure_siret, t0.structure_nom, t1.nom_cplt, 
+		t1.code_insee, t1.commune, t1.adresse, t1.adresse_cplt, t1.adresse_cedex, t1.code_postal, 
+		t1.web, t0.budget, t0.montant_aide, t1.commentaire, 
+		t0.rayonnement_code, t3.libelle as rayonnement_libelle, t0.annee,
+		t2.direction_code, t4.geom, t4.src_geom_code, t4.type_localisation_code, t4.localisation_valide
+	FROM met_cul_test.m_cul_spect_vivant_aider t0
+	INNER JOIN met_cul_test.m_cul_spect_vivant_structure t1
+		ON t0.structure_siret=t1.siret AND t0.structure_nom=t1.nom
+	INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t2
+		ON t0.structure_siret=t2.structure_siret AND t0.structure_nom=t2.structure_nom AND t0.annee=t2.annee
+	INNER JOIN met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide t3
+		ON t0.rayonnement_code=t3.code 
+	INNER JOIN met_cul_test.m_cul_spect_vivant_structure_p_geo t4
+		ON t0.structure_siret=t4.siret and t0.structure_nom=t4.nom
+) r1
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_direction t5
+	ON r1.direction_code=t5.code
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_src_geom t6
+	ON r1.src_geom_code=t6.code
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_type_localisation t7
+	ON r1.type_localisation_code=t7.code
+) r2
+left join (
+	SELECT 
+		t0.structure_siret, t0.structure_nom, t0.annee, t0.dispositif_code, t1.libelle as dispositif_libelle
+	FROM met_cul_test.m_cul_spect_vivant_appartenir t0
+	INNER JOIN met_cul_test.m_cul_spect_vivant_lt_dispositif t1
+		ON t0.dispositif_code=t1.code
+) r3
+on r2.siret=r3.structure_siret and r2.nom=r3.structure_nom and r2.annee_reference=r3.annee
+order by dispositif_code asc;
+					  
+					  
+					  
+					  
+					  
+/*					  
+--DROP VIEW met_cul_test.m_cul_spect_vivant_view;
+--CREATE VIEW met_cul_test.m_cul_spect_vivant_view AS
+select r2.* 
+FROM
+(SELECT r1.structure_siret as siret, r1.structure_nom as nom, r1.nom_cplt, 
+	r1.code_insee, r1.code_postal, r1.commune, r1.adresse, r1.adresse_cplt, r1.adresse_cedex,  
+	r1.web, r1.budget, r1.montant_aide, r1.commentaire, r1.annee as annee_reference,
+	r1.rayonnement_code, r1.rayonnement_libelle,
+	r1.direction_code, t5.libelle as direction_libelle,
+	r1.geom, r1.src_geom_code as geom_src_code, t6.valeur as geom_src_libelle, 
+	r1.type_localisation_code, t7.libelle as type_localisation_libelle, r1.localisation_valide
+	--,
+	--t8.dispositif_code
+FROM (
+	SELECT t0.structure_siret, t0.structure_nom, t1.nom_cplt, 
+		t1.code_insee, t1.commune, t1.adresse, t1.adresse_cplt, t1.adresse_cedex, t1.code_postal, 
+		t1.web, t0.budget, t0.montant_aide, t1.commentaire, 
+		t0.rayonnement_code, t3.libelle as rayonnement_libelle, t0.annee,
+		t2.direction_code, t4.geom, t4.src_geom_code, t4.type_localisation_code, t4.localisation_valide
+	FROM met_cul_test.m_cul_spect_vivant_aider t0
+	INNER JOIN met_cul_test.m_cul_spect_vivant_structure t1
+		ON t0.structure_siret=t1.siret AND t0.structure_nom=t1.nom
+	INNER JOIN met_cul_test.m_cul_spect_vivant_diriger t2
+		ON t0.structure_siret=t2.structure_siret AND t0.structure_nom=t2.structure_nom AND t0.annee=t2.annee
+	INNER JOIN met_cul_test.m_cul_spect_vivant_lt_rayonnement_aide t3
+		ON t0.rayonnement_code=t3.code 
+	INNER JOIN met_cul_test.m_cul_spect_vivant_structure_p_geo t4
+		ON t0.structure_siret=t4.siret and t0.structure_nom=t4.nom
+) r1
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_direction t5
+	ON r1.direction_code=t5.code
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_src_geom t6
+	ON r1.src_geom_code=t6.code
+INNER JOIN met_cul_test.m_cul_spect_vivant_lt_type_localisation t7
+	ON r1.type_localisation_code=t7.code
+) r2
+left join (
+	SELECT 
+		t0.structure_siret, t0.structure_nom, t0.annee, t0.dispositif_code, t1.libelle as dispositif_libelle
+	FROM met_cul_test.m_cul_spect_vivant_appartenir t0
+	INNER JOIN met_cul_test.m_cul_spect_vivant_lt_dispositif t1
+		ON t0.dispositif_code=t1.code
+) r3
+on r2.siret=r3.structure_siret and r2.nom=r3.structure_nom and r2.annee_reference=r3.annee
+	;					  
+*/
 					  
 					  
 /*
